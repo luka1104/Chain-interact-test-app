@@ -1,41 +1,18 @@
-import { ReactNode } from 'react';
 import {
   Box,
   Flex,
-  Avatar,
-  Link,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-  useDisclosure,
   useColorModeValue,
   Stack,
   useColorMode,
-  Center,
   Text,
 } from '@chakra-ui/react';
+import { BiWallet } from 'react-icons/bi';
+import { BCS, TxnBuilderTypes } from 'aptos';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 
-const NavLink = ({ children }: { children: ReactNode }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={'md'}
-    _hover={{
-      textDecoration: 'none',
-      bg: useColorModeValue('gray.200', 'gray.700'),
-    }}
-    href={'#'}>
-    {children}
-  </Link>
-);
-
-export default function Nav() {
+const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
@@ -47,38 +24,17 @@ export default function Nav() {
               <Button onClick={toggleColorMode}>
                 {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
               </Button>
-
-              {/* <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={'full'}
-                  variant={'link'}
-                  cursor={'pointer'}
-                  minW={0}>
-                  <Avatar
-                    size={'sm'}
-                    src={'https://avatars.dicebear.com/api/male/username.svg'}
-                  />
-                </MenuButton>
-                <MenuList alignItems={'center'}>
-                  <br />
-                  <Center>
-                    <Avatar
-                      size={'2xl'}
-                      src={'https://avatars.dicebear.com/api/male/username.svg'}
-                    />
-                  </Center>
-                  <br />
-                  <Center>
-                    <p>Username</p>
-                  </Center>
-                  <br />
-                  <MenuDivider />
-                  <MenuItem>Your Servers</MenuItem>
-                  <MenuItem>Account Settings</MenuItem>
-                  <MenuItem>Logout</MenuItem>
-                </MenuList>
-              </Menu> */}
+              <Button
+                bgGradient='linear(to-br, #0EA4FF, #0AB7AA)'
+                color='white'
+                opacity='0.8'
+                _hover={{
+                  opacity: '1'
+                }}
+                onClick={()  => (window as any).aptos.connect()}
+              >
+                <BiWallet />&nbsp;&nbsp;Connect Wallet
+              </Button>
             </Stack>
           </Flex>
         </Flex>
@@ -86,3 +42,5 @@ export default function Nav() {
     </>
   );
 }
+
+export default Navbar;
