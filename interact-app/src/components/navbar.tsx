@@ -9,10 +9,17 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { BiWallet } from 'react-icons/bi';
-import { BCS, TxnBuilderTypes } from 'aptos';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import contract from '../contracts/DemoToken.json'
+import { AptosClient, AptosAccount, FaucetClient, Types, HexString, BCS, TxnBuilderTypes } from "../../ohio-sdk/sdk";
 
 const Navbar = () => {
+
+  const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
+  const FAUCET_URL = process.env.APTOS_FAUCET_URL || "https://faucet.devnet.aptoslabs.com";
+
+  const client = new AptosClient(NODE_URL);
+
   const { colorMode, toggleColorMode } = useColorMode();
   const [address, setAddress] = useState('')
 
@@ -56,6 +63,30 @@ const Navbar = () => {
     console.log(response);
   }
 
+  const deployContract = async () => {
+    let payload: Types.TransactionPayload = {
+      type: "script_payload",
+      // modules: [{ bytecode: contract.bytecode, abi: {  
+      //   address: address,
+      //   name: "luka",
+      //   friends: [],
+      //   exposed_functions: [],
+      //   structs: []
+      // } 
+      // }],
+    
+      code: { bytecode: "6a226a490000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001048656c6c6f20426c6f636b636861696e00000000000000000000000000000000" },
+      type_arguments: [],
+      arguments: ["0xf087148407be4a0eac45461dbd7c797d3946e0f4"],
+    };
+    let txnRequest = await client.generateTransaction(address, payload);
+    console.log(txnRequest);
+
+    const resp = await (window as any).aptos.signAndSubmitTransaction(txnRequest)
+    await client.waitForTransaction(resp.hash);
+    console.log(resp);
+  }
+
   useEffect(() => {
     checkWalletAddress()
   }, [])
@@ -90,7 +121,8 @@ const Navbar = () => {
                   </>
                 )}
               </Button>
-              <Button onClick={sendTransaction}>test</Button>
+              <Button onClick={sendTransaction}>transaction</Button>
+              <Button onClick={deployContract}>deploy</Button>
             </Stack>
           </Flex>
         </Flex>
