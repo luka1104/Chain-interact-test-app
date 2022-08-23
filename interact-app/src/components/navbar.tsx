@@ -28,68 +28,69 @@ const Navbar = () => {
   }
 
   const handleWalletConnect = async () => {
-    const result = await (window as any).aptos.connect();
-    if(result.address) {
-      setAddress(result.address)
+    const result = await (window as any).spika.connect();
+    console.log("result" + result);
+    if(result.account) {
+      setAddress(result.account)
     }
-    console.log(result);
   }
 
   const checkWalletAddress = async () => {
-    const status = await (window as any).aptos.isConnected()
+    const status = await (window as any).spika.account()
     if(status) {
-      const accountAddress = await (window as any).aptos.account()
-      setAddress(accountAddress.address)
+      const accountAddress = await (window as any).spika.account()
+      setAddress(accountAddress.account)
     }
   }
 
   const disconnect = async () => {
-    await (window as any).aptos.disconnect()
+    await (window as any).spika.disconnect()
   }
 
-  const sendTransaction = async () => {
-    console.log(address);
-    const token = new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString("0x1::aptos_coin::AptosCoin"));
-    const transaction = new TxnBuilderTypes.TransactionPayloadScriptFunction(
-        TxnBuilderTypes.ScriptFunction.natural(
-            "0x1::coin",
-            "transfer",
-            [token],
-            [BCS.bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex('0xc4688d3defda966a30c1fdab7e7f9fa600f81ad65ff39d07933ae4069d8530ca')), BCS.bcsSerializeUint64(1000)],
-        ),
-    );
-    const response = await (window as any).aptos.signAndSubmitTransaction(transaction)
-    // const signedTransaction = await (window as any).aptos.signTransaction(transaction)
-    console.log(response);
-  }
+  // const sendTransaction = async () => {
+  //   console.log(address);
+  //   const token = new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString("0x1::aptos_coin::AptosCoin"));
+  //   const transaction = new TxnBuilderTypes.TransactionPayloadScriptFunction(
+  //       TxnBuilderTypes.ScriptFunction.natural(
+  //           "0x1::coin",
+  //           "transfer",
+  //           [token],
+  //           [BCS.bcsToBytes(TxnBuilderTypes.AccountAddress.fromHex('0xc4688d3defda966a30c1fdab7e7f9fa600f81ad65ff39d07933ae4069d8530ca')), BCS.bcsSerializeUint64(1000)],
+  //       ),
+  //   );
+  //   const response = await (window as any).spika.signAndSubmitTransaction(transaction)
+  //   // const signedTransaction = await (window as any).aptos.signTransaction(transaction)
+  //   console.log(response);
+  // }
+
+  const sendEVMTransaction = async () => {
+    const payload: Types.TransactionPayload = {
+      type: "call_payload",
+      code: { bytecode: `70a08231000000000000000000000000a7f2ed757fc35ffce7a80462a8e3b9134bcdf0c7` },
+      type_arguments: [],
+      arguments: ['0x4be39abff1f4196cd05e85b7c12a976087fd0282'],
+    };
+    const response = await (window as any).spika.signAndSubmitTransaction(payload);
+    console.log('RESPONSE:', response);
+  };
 
   const deployContract = async () => {
     let payload: Types.TransactionPayload = {
-      type: "script_payload",
-      // modules: [{ bytecode: contract.bytecode, abi: {  
-      //   address: address,
-      //   name: "luka",
-      //   friends: [],
-      //   exposed_functions: [],
-      //   structs: []
-      // } 
-      // }],
-    
-      code: { bytecode: "6a226a490000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001048656c6c6f20426c6f636b636861696e00000000000000000000000000000000" },
-      type_arguments: [],
-      arguments: ["0xf087148407be4a0eac45461dbd7c797d3946e0f4"],
+      type: "contract_bundle_payload",
+      modules: [{ bytecode: contract.bytecode }],
     };
-    let txnRequest = await client.generateTransaction(address, payload);
-    console.log(txnRequest);
 
-    const resp = await (window as any).aptos.signAndSubmitTransaction(txnRequest)
-    await client.waitForTransaction(resp.hash);
-    console.log(resp);
+    let txnRequest = await client.generateTransaction(address, payload);
+    console.log("txnRequest" + txnRequest);
+
+    const resp = await (window as any).spika.signAndSubmitTransaction(txnRequest)
+    // await client.waitForTransaction(resp.hash);
+    console.log("resp" + resp);
   }
 
-  useEffect(() => {
-    checkWalletAddress()
-  }, [])
+  // useEffect(() => {
+  //   checkWalletAddress()
+  // }, [])
   return (
     <>
       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
@@ -121,8 +122,9 @@ const Navbar = () => {
                   </>
                 )}
               </Button>
-              <Button onClick={sendTransaction}>transaction</Button>
+              {/* <Button onClick={sendTransaction}>transaction</Button> */}
               <Button onClick={deployContract}>deploy</Button>
+              <Button onClick={sendEVMTransaction}>Bean token</Button>
             </Stack>
           </Flex>
         </Flex>
