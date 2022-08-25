@@ -4,6 +4,7 @@ import { Center, Grid, Box } from '@chakra-ui/react'
 import Navbar from '../src/components/navbar'
 import ConnectStep from '../src/components/connectStep'
 import DeployStep from '../src/components/deployStep'
+import TransactionStep from '../src/components/TransactionStep'
 
 const Home: NextPage = () => {  
   return (
@@ -11,6 +12,7 @@ const Home: NextPage = () => {
       <Navbar />
       <ConnectStep />
       <DeployStep />
+      <TransactionStep />
     </Box>
   )
 }
