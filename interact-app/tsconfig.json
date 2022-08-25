@@ -16,6 +16,6 @@
     "incremental": true,
     "isolatedModules": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/contexts/walletContext.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/contexts/transactionContext.jsx"],
   "exclude": ["node_modules", "ohio-sdk"]
 }
