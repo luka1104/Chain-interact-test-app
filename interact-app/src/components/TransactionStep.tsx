@@ -31,7 +31,7 @@ const TransactionStep = () => {
         const third_addr = "872449c44937f6Ac266cbBCDCb189B25AcEBb9E9"
 
         const tranferPayload = generatePayload("transfer", [`0x${address_to.substring(26)}`, amount.toString() ], contractAddress)
-        if(walletProvider === 'petra'){
+        if((window as any).aptos){
             const transferResponse = await (window as any).aptos.signAndSubmitTransaction(tranferPayload);
             await client.waitForTransaction(transferResponse.hash);
         } else {

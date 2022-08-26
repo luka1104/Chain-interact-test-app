@@ -9,19 +9,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { TransactionContext } from '../contexts/transactionContext'
 
 const Navbar = () => {
-  const { walletProvider, setWalletProvider } = useContext(TransactionContext);
   const { colorMode, toggleColorMode } = useColorMode();
-
-  const toggleWalletProvider = () => {
-    if(walletProvider === 'petra') {
-      setWalletProvider('spika');
-    } else {
-      setWalletProvider('petra');
-    }
-  }
 
   return (
     <>
@@ -31,9 +21,6 @@ const Navbar = () => {
 
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
-              <Button onClick={toggleWalletProvider}>
-                {walletProvider === 'petra' ? <>P</> : <>S</>}
-              </Button>
               <Button onClick={toggleColorMode}>
                 {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
               </Button>

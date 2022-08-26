@@ -11,10 +11,9 @@ export const TransactionProvider = ({ children }) => {
 
   const [address, setAddress] = useState('');
   const [contractAddress, setContractAddress] = useState('')
-  const [walletProvider, setWalletProvider] = useState('petra')
 
   const connectWallet = async () => {
-    if(walletProvider === 'petra') {
+    if(window.aptos) {
       const result = await window.aptos.connect();
       if(result.address) {
         setAddress(result.address)
@@ -38,7 +37,7 @@ export const TransactionProvider = ({ children }) => {
   }
 
   const disconnect = async () => {
-    if(walletProvider === 'petra') {
+    if(window.aptos) {
       await window.aptos.disconnect()
     } else {
       await window.spika.disconnect()
@@ -50,7 +49,7 @@ export const TransactionProvider = ({ children }) => {
       type: "contract_bundle_payload",
       modules: [{ bytecode: contract.bytecode }],
     };
-    if(walletProvider === 'petra') {
+    if(window.aptos) {
       const resp = await window.aptos.signAndSubmitTransaction(payload)
       await client.waitForTransaction(resp.hash);
     } else {
@@ -65,12 +64,12 @@ export const TransactionProvider = ({ children }) => {
     }
   }
   useEffect(() => {
-    if(walletProvider === 'petra') {
+    if(window.aptos) {
       checkWalletAddress()
     }
   }, [])
   return (
-      <TransactionContext.Provider value={{address, contractAddress, walletProvider, setWalletProvider, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract}}>
+      <TransactionContext.Provider value={{address, contractAddress, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract}}>
         {children}
       </TransactionContext.Provider>
   )
