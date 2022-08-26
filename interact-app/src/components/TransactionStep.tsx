@@ -67,7 +67,7 @@ const TransactionStep = () => {
                 <Text pr="5%" w='300px' h="40px" lineHeight="40px" ml="5%">Step 3: Send EVM Transactions</Text>
                 <Flex ml="10%">
                     <FormControl w="40%">
-                        <FormLabel>Bob's Address</FormLabel>
+                        <FormLabel>Address</FormLabel>
                         <Input 
                             placeholder='Aptos Address'
                             disabled={!address || !contractAddress}
@@ -100,7 +100,7 @@ const TransactionStep = () => {
                 </Button>
             </Box>
             <Center>
-                <Text>Bob's Balance:{balance}</Text>
+                <Text>Balance of Bob:{balance}</Text>
             </Center>
         </Box>
     )
