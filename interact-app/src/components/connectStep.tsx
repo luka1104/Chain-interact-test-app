@@ -17,7 +17,7 @@ const ConnectStep = () => {
     const { address, connectWallet, disconnect } = useContext(TransactionContext);
     return (
         <>
-            <Center mt="100px">
+            <Center w="40%" mt="100px" mr="auto" ml="auto" bg={useColorModeValue('rgba(0,0,0,0.15)', 'rgba(255,255,255,0.15)')} h='100px' borderRadius="25px">
                 <Flex>
                     <Text pr="5%" w="200px" h="40px" lineHeight="40px">Step 1: Connect Wallet</Text>
                     <Button

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { AptosClient } from "aptos";
 import { getEVMResources } from '../utils/getEVMResources'
+import { toast } from 'react-toastify'
 
 export const TransactionContext = React.createContext();
 
@@ -15,6 +16,7 @@ export const TransactionProvider = ({ children }) => {
     console.log("result" + result);
     if(result.account) {
       setAddress(result.account)
+      toast('Step 1 compleated! Go to step 2')
     }
   }
 
@@ -38,8 +40,11 @@ export const TransactionProvider = ({ children }) => {
     const resp = await window.spika.signAndSubmitTransaction(payload)
     await client.waitForTransaction(resp.hash);
     const contractAddr = await getEVMResources(address);
-    console.log(`EVM contract address: ${contractAddr}`);
-    setContractAddress(contractAddr);
+    if(contractAddr) {
+      console.log(`EVM contract address: ${contractAddr}`);
+      setContractAddress(contractAddr);
+      toast('Step 2 compleated! Go to step 3')
+    }
   }
     return (
         <TransactionContext.Provider value={{address, contractAddress, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract}}>
