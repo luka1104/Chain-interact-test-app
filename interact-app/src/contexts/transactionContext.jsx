@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AptosClient } from "aptos";
 import { getEVMResources } from '../utils/getEVMResources'
 import { toast } from 'react-toastify'
@@ -11,25 +11,38 @@ export const TransactionProvider = ({ children }) => {
 
   const [address, setAddress] = useState('');
   const [contractAddress, setContractAddress] = useState('')
+  const [walletProvider, setWalletProvider] = useState('petra')
+
   const connectWallet = async () => {
-    const result = await window.spika.connect();
-    console.log("result" + result);
-    if(result.account) {
-      setAddress(result.account)
-      toast('Step 1 compleated! Go to step 2')
+    if(walletProvider === 'petra') {
+      const result = await window.aptos.connect();
+      if(result.address) {
+        setAddress(result.address)
+        toast('Step 1 compleated! Go to step 2')
+      }
+    } else {
+      const result = await window.spika.connect();
+      if(result.account) {
+        setAddress(result.account)
+        toast('Step 1 compleated! Go to step 2')
+      }
     }
   }
 
   const checkWalletAddress = async () => {
-    const status = await window.spika.account()
+    const status = await window.aptos.isConnected()
     if(status) {
-      const accountAddress = await window.spika.account()
-      setAddress(accountAddress.account)
+      const currentAddress = await window.aptos.account()
+      setAddress(currentAddress.address)
     }
   }
 
   const disconnect = async () => {
-    await window.spika.disconnect()
+    if(walletProvider === 'petra') {
+      await window.aptos.disconnect()
+    } else {
+      await window.spika.disconnect()
+    }
   }
 
   const deployContract = async (contract) => {
@@ -37,8 +50,13 @@ export const TransactionProvider = ({ children }) => {
       type: "contract_bundle_payload",
       modules: [{ bytecode: contract.bytecode }],
     };
-    const resp = await window.spika.signAndSubmitTransaction(payload)
-    await client.waitForTransaction(resp.hash);
+    if(walletProvider === 'petra') {
+      const resp = await window.aptos.signAndSubmitTransaction(payload)
+      await client.waitForTransaction(resp.hash);
+    } else {
+      const resp = await window.spika.signAndSubmitTransaction(payload)
+      await client.waitForTransaction(resp.hash);
+    }
     const contractAddr = await getEVMResources(address);
     if(contractAddr) {
       console.log(`EVM contract address: ${contractAddr}`);
@@ -46,9 +64,14 @@ export const TransactionProvider = ({ children }) => {
       toast('Step 2 compleated! Go to step 3')
     }
   }
-    return (
-        <TransactionContext.Provider value={{address, contractAddress, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract}}>
-          {children}
-        </TransactionContext.Provider>
-    )
+  useEffect(() => {
+    if(walletProvider === 'petra') {
+      checkWalletAddress()
+    }
+  }, [])
+  return (
+      <TransactionContext.Provider value={{address, contractAddress, walletProvider, setWalletProvider, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract}}>
+        {children}
+      </TransactionContext.Provider>
+  )
 }
