@@ -22,7 +22,7 @@ import { shortenString } from '../utils/shortenString'
 const TransactionStep = () => {
     const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
     const client = new AptosClient(NODE_URL);
-    const { address, setAddress, contractAddress, walletProvider } = useContext(TransactionContext);
+    const { address, setAddress, contractAddress } = useContext(TransactionContext);
     const [balance, setBalance] = useState(0);
     const [amount, setAmount] = useState(100000);
 
@@ -46,7 +46,7 @@ const TransactionStep = () => {
         const evmOutput = changes.find(c => c.data.type === "0x1::account::Evm")?.data.data  as { output: string };
         if(evmOutput) {
             setBalance(parseInt(evmOutput.output, 16));
-            toast('Step 3 compleated!')
+            toast('Step 3 completed!')
         }
     };
     const handleAddressChange = (e: any) => {
