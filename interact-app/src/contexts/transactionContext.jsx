@@ -17,14 +17,16 @@ export const TransactionProvider = ({ children }) => {
       const result = await window.aptos.connect();
       if(result.address) {
         setAddress(result.address)
-        toast('Step 1 compleated! Go to step 2')
+        toast('Step 1 completed! Go to step 2')
       }
-    } else {
+    } else if(window.spika) {
       const result = await window.spika.connect();
       if(result.account) {
         setAddress(result.account)
-        toast('Step 1 compleated! Go to step 2')
+        toast('Step 1 completed! Go to step 2')
       }
+    } else {
+      toast('Please install the wallet extension')
     }
   }
 
@@ -60,7 +62,7 @@ export const TransactionProvider = ({ children }) => {
     if(contractAddr) {
       console.log(`EVM contract address: ${contractAddr}`);
       setContractAddress(contractAddr);
-      toast('Step 2 compleated! Go to step 3')
+      toast('Step 2 completed! Go to step 3')
     }
   }
   useEffect(() => {
