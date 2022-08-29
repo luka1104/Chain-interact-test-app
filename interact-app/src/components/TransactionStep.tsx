@@ -17,13 +17,14 @@ import { TransactionContext } from '../contexts/transactionContext'
 import { generatePayload } from '../utils/generatePayload'
 import { AptosClient, AptosAccount, Types } from "aptos";
 import { toast } from 'react-toastify'
-import { shortenString } from '../utils/shortenString'
+import { getBalance } from '../utils/getBalance'
+import { insertComma } from '../utils/insertComma'
 
 const TransactionStep = () => {
     const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
     const client = new AptosClient(NODE_URL);
-    const { address, setAddress, contractAddress } = useContext(TransactionContext);
-    const [balance, setBalance] = useState(0);
+    const { address, setAddress, contractAddress, balance, setBalance } = useContext(TransactionContext);
+    const [bobBalance, setBobBalance] = useState(0);
     const [amount, setAmount] = useState(100000);
 
     const sendEVMTransaction = async () => {
@@ -37,15 +38,14 @@ const TransactionStep = () => {
         } else {
             const transferResponse = await (window as any).spika.signAndSubmitTransaction(tranferPayload);
             await client.waitForTransaction(transferResponse.hash);
-        }
-        const balanceOfPayload = generatePayload("balanceOf", [`0x${address_to.substring(26)}`], contractAddress)
-        const account = new AptosAccount(undefined, address)
-        const txnRequest = await client.generateTransaction(address, balanceOfPayload);
-        const simResponse = await client.simulateTransaction(account, txnRequest);
-        const changes = simResponse[0].changes as Types.WriteResource[]; 
-        const evmOutput = changes.find(c => c.data.type === "0x1::account::Evm")?.data.data  as { output: string };
+        } 
+        const evmOutput = await getBalance(address, contractAddress)
         if(evmOutput) {
             setBalance(parseInt(evmOutput.output, 16));
+        }
+        const evmOutput2 = await getBalance(address_to, contractAddress)
+        if(evmOutput) {
+            setBobBalance(parseInt(evmOutput2.output, 16));
             toast('Step 3 completed!')
         }
     };
@@ -72,6 +72,7 @@ const TransactionStep = () => {
                             placeholder='Aptos Address'
                             disabled={!address || !contractAddress}
                             onChange={(e) => {handleAddressChange(e)}}
+                            value={address}
                         />
                     </FormControl>
                     <FormControl w="20%" ml="20%">
@@ -80,6 +81,7 @@ const TransactionStep = () => {
                             placeholder='Token amount'
                             onChange={(e) => {handleAmountChange(e)}}
                             disabled={!address || !contractAddress}
+                            value={amount}
                         />
                     </FormControl>
                 </Flex>
@@ -87,7 +89,7 @@ const TransactionStep = () => {
                     disabled={!address || !contractAddress}
                     bgGradient='linear(to-br, #0EA4FF, #0AB7AA)'
                     color='white'
-                    ml="5%"
+                    ml="56%"
                     mt="20px"
                     opacity='0.8'
                     _hover={{
@@ -96,12 +98,11 @@ const TransactionStep = () => {
                     onClick={sendEVMTransaction}
                 >
                     <AiOutlineTransaction />
-                    &nbsp;&nbsp;Send 100000 Token to Bob
+                    &nbsp;&nbsp;Send Token to Bob
                 </Button>
             </Box>
-            <Center>
-                <Text>Balance of Bob:{balance}</Text>
-            </Center>
+            <Text ml="5%" mt="10px">Your balance:&nbsp;&nbsp;{insertComma(balance)}&nbsp;&nbsp;Tokens</Text>
+            <Text ml="5%" mt="10px">Balance of Bob:&nbsp;&nbsp;{insertComma(bobBalance)}&nbsp;&nbsp;Tokens</Text>
         </Box>
     )
 }

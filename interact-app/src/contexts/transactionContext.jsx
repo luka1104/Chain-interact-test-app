@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { AptosClient } from "aptos";
+import { AptosClient, AptosAccount } from "aptos";
 import { getEVMResources } from '../utils/getEVMResources'
+import { getBalance } from '../utils/getBalance'
 import { toast } from 'react-toastify'
 
 export const TransactionContext = React.createContext();
@@ -9,8 +10,9 @@ export const TransactionProvider = ({ children }) => {
   const NODE_URL = process.env.APTOS_NODE_URL || "https://fullnode.devnet.aptoslabs.com";
   const client = new AptosClient(NODE_URL);
 
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState('')
   const [contractAddress, setContractAddress] = useState('')
+  const [balance, setBalance] = useState(0)
 
   const connectWallet = async () => {
     if(window.aptos) {
@@ -64,6 +66,10 @@ export const TransactionProvider = ({ children }) => {
       setContractAddress(contractAddr);
       toast('Step 2 completed! Go to step 3')
     }
+    const evmOutput = await getBalance(address, contractAddr)
+    if(evmOutput) {
+        setBalance(parseInt(evmOutput.output, 16));
+    }
   }
   useEffect(() => {
     if(window.aptos) {
@@ -71,7 +77,7 @@ export const TransactionProvider = ({ children }) => {
     }
   }, [])
   return (
-      <TransactionContext.Provider value={{address, contractAddress, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract}}>
+      <TransactionContext.Provider value={{address, contractAddress, balance, setAddress, connectWallet, checkWalletAddress, disconnect, deployContract, setBalance}}>
         {children}
       </TransactionContext.Provider>
   )
