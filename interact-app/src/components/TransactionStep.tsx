@@ -65,8 +65,8 @@ const TransactionStep = () => {
         <Box mt="50px" bg={useColorModeValue('rgba(0,0,0,0.15)', 'rgba(255,255,255,0.15)')} h='300px' w="60%" mr="auto" ml="auto" borderRadius="50px">
             <Box pt="20px">
                 <Text pr="5%" w='300px' h="40px" lineHeight="40px" ml="5%">Step 3: Send EVM Transactions</Text>
-                <Flex ml="10%">
-                    <FormControl w="40%">
+                <Flex ml="5%">
+                    <FormControl w="60%">
                         <FormLabel>Address</FormLabel>
                         <Input 
                             placeholder='Aptos Address'
@@ -75,7 +75,7 @@ const TransactionStep = () => {
                             value={address}
                         />
                     </FormControl>
-                    <FormControl w="20%" ml="20%">
+                    <FormControl w="20%" ml="5%">
                         <FormLabel>Amount</FormLabel>
                         <Input 
                             placeholder='Token amount'
@@ -89,7 +89,7 @@ const TransactionStep = () => {
                     disabled={!address || !contractAddress}
                     bgGradient='linear(to-br, #0EA4FF, #0AB7AA)'
                     color='white'
-                    ml="56%"
+                    ml="5%"
                     mt="20px"
                     opacity='0.8'
                     _hover={{

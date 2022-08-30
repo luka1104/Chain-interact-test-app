@@ -4,7 +4,7 @@ import contract from '../contracts/DemoToken.json'
 import { Types } from "aptos";
 
 export const generatePayload = (funcName: string, inputs: string[], contractAddr: string) => {
-    const web3 = new Web3(Web3.givenProvider || 'ws://some.local-or-remote.node:8546');
+    const web3 = new Web3();
     const abi = contract.abi.find(a => a.name == funcName)
     const code = web3.eth.abi.encodeFunctionCall((abi as AbiItem), inputs);
     console.log(code);
